@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Standard Meta -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/static/style.css">
+  <script src="https://cdn.staticfile.org/jquery/3.3.1/jquery.min.js"></script>
+  <title>操作目录</title>
+  <link crossorigin="anonymous" integrity="sha384-ATvSpJEmy1egycrmomcFxVn4Z0A6rfjwlzDQrts/1QRerQhR9EEpEYtdysLpQPuQ"
+    href="//lib.baomitu.com/semantic-ui/2.4.1/semantic.min.css" rel="stylesheet">
+  <script crossorigin="anonymous" integrity="sha384-6urqf2sgCGDfIXcoxTUOVIoQV+jFr/Zuc4O2wCRS6Rnd8w0OJ17C4Oo3PuXu8ZtF"
+    src="//lib.baomitu.com/semantic-ui/2.4.1/semantic.min.js"></script>
+
+
+    <script src="/static/js/jquery-sortable-min.js"></script>
+    <script>
+      $(function () {
+  
+        var group = $("ol#edit_tool").sortable({
+          group: 'serialization',
+          delay: 500,
+          onDrop: function ($item, container, _super) {
+            var data = group.sortable("serialize").get();
+  
+            var jsonString = JSON.stringify(data, null, ' ');
+  
+            $('#serialize_output2').text(jsonString);
+            _super($item, container);
+          }
+        });
+
+
+// 获取预测关键词
+function fenci_update (text1,text2){
+
+$.get(
+        "/json/fenci_update",
+        { 'text1': text1,
+        'text2': text2,
+         },
+        function (data) {
+          // ...
+          console.log('fenci_update结果', data)
+          // var textLong = ''
+          // var textL = ''
+          // $.each(data.items, function (key, value) {
+          //   console.log(key + ": " + value);
+          //   console.log(value);
+
+          //   // textLong = textLong + '<li id="word' + key + '" class="ui mini button word ">' + value.word + "</li>"
+
+          //   textL = textL +' '+ value.word
+
+          // })
+
+          // $("#calculate_keyword").val(data)
+          $('#msg').html('句子提交成功')
+ })
+
+
+
+}
+
+// 获取预测关键词
+function fenci_get (text){
+
+$.get(
+        "/json/sentence/fenci",
+        { text: text },
+        function (data) {
+          // ...
+          console.log('fenci_update结果', data)
+          var textLong = ''
+          // var textL = ''
+          $.each(data.seg_list, function (key, value) {
+            console.log(key + ": " + value);
+            console.log(value);
+
+            textLong = textLong + '<li id="word' + key +'" class="word remove-'+value.remove +' ui mini button word ">' + value.word + "</li>"
+
+            // textL = textL +' '+ value.word
+
+          })
+
+          $("#edit_tool").html(textLong)
+          $("#original").html(data.text)
+          $('#msg').html('辅助预测加载成功')
+ })
+
+
+
+}
+
+$(document).on('click', '#text_list ol li', function () {
+// #提取语句
+$('#msg').html('句子辅助预测加载中...')
+// fenci_update (text)
+var text = $(this).text()
+fenci_get(text)
+$(this).addClass('used')
+
+
+})
+
+
+
+$(document).on('click', '#mask', function () {
+
+var text1  = $("#original").text();
+var text2  = $("#edit_tool").text();
+fenci_update (text1,text2)
+// var calculate_keyword = $('#calculate_keyword').val();
+
+// calculate_keyword = calculate_keyword + ' '+ text;
+// $('#calculate_keyword').val(calculate_keyword);
+
+
+
+})
+
+
+
+$(document).on('click', '#fenci_get', function () {
+
+ 
+// fenci_update (text)
+
+fenci_get()
+ 
+
+})
+
+
+
+
+
+
+ //数组方法
+ // 另外可用call()改变Array原型链上join()方法的对象并指向String
+ function times2(str, num){
+ return new Array(num+1).join(str);
+ }
+
+ 
+
+
+$(document).on('click', '.word', function () {
+
+var text  = $(this).text();
+console.log(text);
+console.log(text.length);
+console.log(times2('*', text.length));
+// var new_text = times2('*', text.length)
+var new_text = "##del##"+text+"##del##"
+$(this).text(new_text)
+
+// fenci_update (text)
+// var calculate_keyword = $('#calculate_keyword').val();
+
+// calculate_keyword = calculate_keyword + ' '+ text;
+// $('#calculate_keyword').val(calculate_keyword);
+
+
+
+})
+
+
+
+$(document).on('click', '#add_juzi_edit_btn_get', function () {
+
+ 
+// fenci_update (text)
+$('#msg').html('获取随机资料中')
+text_get()
+
+
+})
+
+
+
+
+function text_get(){
+//  var text = $("#add_juzi_edit").val()
+//  add_juzi_edit
+
+$.get(
+        "/json/text_get",
+        {},
+        function (data) {
+          // ...
+          console.log('获取文章结果', data)
+          $("#add_juzi_edit").val(data)
+          $('#msg').html('句子辅助预测加载成功')
+          text_list_update()
+ })
+          
+        
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).on('click', '#add_juzi_edit_btn', function () {
+
+ 
+// fenci_update (text)
+
+text_list_update()
+ 
+
+})
+
+
+function text_list_update(){
+ var text = $("#add_juzi_edit").val()
+  $.post("/json/text_list_update", { 'text': text})
+          .done(function (data) {
+            // alert( "Data Loaded: " + data );
+            console.log(data)
+            // if (data.msg) {
+            //   $("#msg").html(data.msg)
+            // }
+            // $("#prediction_list").append("</hr><ul></ul>")
+            var textLong=''
+            $.each( data, function( key, value ) {
+              console.log(value)
+              textLong=textLong+"<li>"+value+"</li>"
+
+
+            });
+            $("#text_list ol").html(textLong)
+
+            $('#msg').html('随机资料获取成功')
+
+          }); 
+          
+          
+        
+
+
+
+}
+
+
+
+
+
+
+      });
+        </script>
+        <style>
+          ol#edit_tool {
+    padding: 0;
+}
+        #edit_tool li{
+          display: inline-block;
+    padding: 10px;
+    background: #cccaca;
+    margin: 2px 1px;
+    border-radius: 3px;
+        }
+
+        #edit_tool li.remove-Yes{
+
+    background: #ef9b9b;
+
+        }
+
+
+
+        #edit_tool li.dragged{
+       
+  
+    background: #ddd;
+ 
+        }
+        #edit_tool li.placeholder{
+       
+       padding: 10px 30px !important;
+       background: #ff3c3c;
+    
+           }
+           .used{
+            background: #ff3c3c;
+            display: none;
+           }
+           #text_list li{
+
+            padding: 10px;
+    background: #b5b3b3;
+    margin: 6px;
+           }
+
+           div#msg {
+    font-size: 2em;
+    padding: 20px;
+    background: #dad6d6;
+}
+        </style>
+</head>
+
+<body>
+    <div class="ui fixed inverted menu">
+        <div class="ui container">
+          <a href="#" class="header item">
+             
+            Ai Writer
+          </a>
+          <a href="#" class="item">Home</a>
+          <div class="ui simple dropdown item">
+            工具 <i class="dropdown icon"></i>
+            <div class="menu">
+              <a class="item" href="/fenci">编辑器</a>
+
+              <div class="divider"></div>
+              <div class="header">其他工具</div>
+              <div class="item">
+                <i class="dropdown icon"></i>
+                Sub Menu
+                <div class="menu">
+                 
+                  <a class="item" href="#">Link Item</a>
+                </div>
+              </div>
+              <a class="item" href="#">Link Item</a>
+            </div>
+          </div>
+        </div>
+      </div>
+  <div class="ui grid container">
+
+
+
+
+ 
+    <div class="row">
+        <div class="column">
+
+          <div id="msg"></div>
+
+
+            <div id="original" class="">        </div>
+    
+          <ol id="edit_tool" class='serialization'>
+  <li>First</li>
+  <li>Second</li>
+  <li>Third</li>
+</ol>
+
+
+<button id='mask' class="ui green button">提交</button>
+<button id='fenci_get' class="ui green button">sfenci_get</button>
+
+
+
+
+
+
+<div class="ui form">
+    <textarea id="add_juzi_edit" rows="5" cols="20"> </textarea>
+
+    <button id="add_juzi_edit_btn" class="ui green button">添加语句</button>
+
+    <button id="add_juzi_edit_btn_get" class="ui green button">获取文章</button>
+  </div>
+
+
+
+
+  <div id="text_list" class="ui form">
+
+    <ol></ol>
+   
+    </div>
+  
+
+
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+ 
+  </div>
+</body>
+
+</html>
