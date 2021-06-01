@@ -164,7 +164,7 @@ twine==1.13.0
 Twisted==19.2.0
 ubuntu-drivers-common==0.0.0
 ufw==0.36
-urllib3==1.24.2
+urllib3==1.26.5
 uvloop==0.12.2
 vidcutter==6.0.0
 virtualenv==16.5.0
