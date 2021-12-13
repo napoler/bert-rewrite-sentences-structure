@@ -59,7 +59,7 @@ jupyterlab==0.35.5
 jupyterlab-server==0.2.0
 livereload==2.6.0
 louis==3.5.0
-lxml==4.3.3
+lxml==4.6.5
 MagicBaidu==0.0.9
 magneticod==0.6.0
 Mako==1.0.7
