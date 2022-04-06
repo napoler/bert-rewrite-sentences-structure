@@ -161,7 +161,7 @@ tornado==6.0.2
 tqdm==4.31.1
 traitlets==4.3.2
 twine==1.13.0
-Twisted==19.2.0
+Twisted==22.2.0
 ubuntu-drivers-common==0.0.0
 ufw==0.36
 urllib3==1.24.2
